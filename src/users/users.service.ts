@@ -5,7 +5,7 @@ export class UsersService{
         id: number,
         name: string, 
         age: number, 
-        gender: string,
+        gender?: string,
         isMarried: boolean
     }[] = [
         {id: 0, name: 'John', age: 28, gender: 'male', isMarried: true},
@@ -25,8 +25,9 @@ export class UsersService{
         id: number,
         name: string, 
         age: number, 
-        gender: string,
-        isMarried: boolean
+        gender?: string,
+        isMarried: boolean,
+        email: string
     }){
         this.users.push(user)
     }

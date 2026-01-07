@@ -1,30 +1,28 @@
-import { Controller, Get, Param, Post, Query } from "@nestjs/common";
+import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Post, Query, Body, ValidationPipe } from "@nestjs/common";
 import { UsersService } from "./users.service";
+import { CreateUserDto } from "./dtos/create-user.dto";
 
 //http://localhost:3000/users
 @Controller('users')
 export class UsersController{
-    @Get()
-    getUsers(@Query() qs: any) {
-        const usersService = new UsersService();
-        
-        if(qs.gender) {
-            return usersService.getAllUsers().filter(u => u.gender === qs.gender)
-        }
+    constructor(private readonly usersService: UsersService) {}
 
-        return usersService.getAllUsers();
+    @Get()
+    getUsers(
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number, 
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number
+    ) {       
+        return this.usersService.getAllUsers();
     }
 
     @Get(':id')
-    getUserById(@Param('id') id: any) {
-        const usersService = new UsersService();
-        return usersService.getUserById(+id);
+    getUserById(@Param('id', ParseIntPipe) id: number) {
+        return this.usersService.getUserById(id);
     }
 
     @Post()
-    createUser(@Query() queryString: any) {
-        const usersService = new UsersService();
-        usersService.createUser(queryString)
+    createUser(@Body(new ValidationPipe()) user: CreateUserDto) {
+        this.usersService.createUser(user)
         return "New user created!"
     }
 }
